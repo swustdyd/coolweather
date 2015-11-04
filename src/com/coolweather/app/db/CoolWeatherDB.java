@@ -37,7 +37,7 @@ public class CoolWeatherDB {
 	/**
 	 * »ñÈ¡CoolWestherDBÊµÀý
 	 */
-	synchronized static CoolWeatherDB getInstance(Context context){
+	public synchronized static CoolWeatherDB getInstance(Context context){
 		if (coolWeatherDB == null) {
 			coolWeatherDB = new CoolWeatherDB(context);
 		}
@@ -52,7 +52,7 @@ public class CoolWeatherDB {
 			ContentValues values = new ContentValues();
 			values.put("province_name", province.getProvinceName());
 			values.put("province_code", province.getProvinceCode());
-			db.insert(DB_NAME, null, values);
+			db.insert("Province", null, values);
 		}
 	}
 	
