@@ -11,11 +11,12 @@ import com.coolweather.app.model.Province;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
-
-import android.R.integer;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -43,34 +44,33 @@ public class ChooseAreaActivity extends Activity{
 	public static final int LEVEL_CITY = 1;
 	public static final int LEVEL_COUNTRY = 2;
 	
-	//ListView数据列表
-	List<String> dataList = new ArrayList<String>();
-	//省列表
-	List<Province> provinceList;
-	//市列表
-	List<City> cityList;
-	//县列表
-	List<Country> countryList;
 	
-	//选中的省份
-	Province selectedProvince;
-	//选中的市
-	City selectedCity;
-	//选中的县
-	Country selectedCounrty;
-	//当前选中的级别
-	int currentLevel;
-	//最近选中的省的下标
-	int lastSelectProvinceIndex = 0;
-	//最近选中的市的下标
-	int lastSelectCityIndex = 0;
-	//最近选中的县的下标
-	int lastSelectCounrtyIndex = 0;
+	List<String> dataList = new ArrayList<String>();//ListView数据列表	
+	List<Province> provinceList;//省列表	
+	List<City> cityList;//市列表	
+	List<Country> countryList;//县列表
+	Province selectedProvince;//选中的省份	
+	City selectedCity;//选中的市	
+	Country selectedCounrty;//选中的县
+	int currentLevel;//当前选中的级别
+	int lastSelectProvinceIndex = 0;//最近选中的省的下标	
+	int lastSelectCityIndex = 0;//最近选中的市的下标	
+	int lastSelectCounrtyIndex = 0;//最近选中的县的下标
+	boolean isFromWeatherActivity;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
+		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+		//已选择城市，并且不是从WeatherActivity跳转过来，才跳转到WeatherActivity
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+		if (pref.getBoolean("city_selected", false) && !isFromWeatherActivity) {
+			Intent intent = new Intent(this, WeatherAcitivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		listView = (ListView) findViewById(R.id.list_view);
@@ -91,6 +91,12 @@ public class ChooseAreaActivity extends Activity{
 					selectedCity = cityList.get(index);
 					lastSelectCityIndex = index;
 					queryCounties();
+				}else if (currentLevel == LEVEL_COUNTRY) {
+					String countryCode = countryList.get(index).getCountryCode();
+					Intent intent = new Intent(ChooseAreaActivity.this, WeatherAcitivity.class);
+					intent.putExtra("countryCode", countryCode);
+					startActivity(intent);
+					finish();
 				}
 			}
 		});
@@ -201,7 +207,6 @@ public class ChooseAreaActivity extends Activity{
 			
 			@Override
 			public void onError(final Exception e) {
-				// TODO Auto-generated method stub
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -245,6 +250,11 @@ public class ChooseAreaActivity extends Activity{
 		}else if (currentLevel == LEVEL_CITY) {
 			queryProvinces();
 		}else {
+			if (isFromWeatherActivity) {
+				//如果是从WeatherActivity跳转过来的，则重新回到WeatherActivity
+				Intent intent = new Intent(this, WeatherAcitivity.class);
+				startActivity(intent);
+			}
 			finish();
 		}
 	}
