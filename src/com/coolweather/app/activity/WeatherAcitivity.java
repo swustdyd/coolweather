@@ -1,12 +1,12 @@
 package com.coolweather.app.activity;
 
 import com.coolweather.app.R;
+import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
-import android.app.DownloadManager.Query;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -140,6 +140,8 @@ public class WeatherAcitivity extends Activity implements OnClickListener{
 		temp2.setText(pref.getString("temp2", ""));
 		currentDate.setText(pref.getString("current_date", ""));
 		weatherInfoLayout.setVisibility(View.VISIBLE);
+		Intent i = new Intent(this, AutoUpdateService.class);
+		startService(i);
 	}
 
 	@Override

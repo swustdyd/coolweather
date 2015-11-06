@@ -1,16 +1,13 @@
 package com.coolweather.app.util;
 
-import java.text.SimpleDateFormat;
+
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
